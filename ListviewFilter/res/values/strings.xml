@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">ListviewFilter</string>
+    <string name="title_activity_main">MainActivity</string>
+	    <string name="search_hint">search</string>
+	    
+	    <dimen name="index_list_font">7dp</dimen>
+</resources>
