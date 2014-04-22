@@ -1,0 +1,7 @@
+<resources>
+
+     
+	    <dimen name="index_bar_view_text_size">16sp</dimen>
+	     <dimen name="index_bar_view_width">30dp</dimen>
+    <dimen name="index_bar_view_margin">15dp</dimen>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/search_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:drawableLeft="@drawable/ic_search"
+        android:hint="@string/search_hint"
+        android:singleLine="true" />
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <include
+            layout="@layout/loading_empty_view"
+             />
+        
+         <com.example.listviewfilter.PinnedHeaderListView
+            android:id="@+id/list_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollingCache="false" />
+    </FrameLayout>
+
+</LinearLayout>
