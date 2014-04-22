@@ -1,8 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">ListviewFilter</string>
-    <string name="title_activity_main">MainActivity</string>
-	    <string name="search_hint">search</string>
-	    
-	    <dimen name="index_list_font">7dp</dimen>
+ 	<string name="search_hint">search</string>
+	<string name="empty_list_msg">No Results</string>   
+
 </resources>

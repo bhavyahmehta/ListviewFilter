@@ -1,58 +1,29 @@
-
+//@author Bhavya
 package com.example.listviewfilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-/*
- *  @Author: Bhavya
- */
 
 public class MainActivity extends Activity 
 {
 	
-	//listview section
-    private StandardArrayAdapter arrayAdapter;
-    private SectionListAdapter sectionAdapter;
-    private SectionListView listView;
-	
-    EditText search;
-	
-	//sideIndex
-	LinearLayout sideIndex;	
-	// height of side index
-    private int sideIndexHeight,sideIndexSize;
-    // list with items for side index
-    private ArrayList<Object[]> sideIndexList = new ArrayList<Object[]>();
-   
-    
-	// an array with countries to display in the list
-    private ArrayList<String> COUNTRIES;
-    static String[] COUNTRIES_ARY = new String[]
+	// an array of countries to display in the list    
+    String[] ITEMS_ARY = new String[]
     { "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea",
             "Eritrea", "Estonia", "Ethiopia", "Faeroe Islands",
             "Falkland Islands", "Fiji", "Finland", "Afghanistan", "Albania",
@@ -109,283 +80,311 @@ public class MainActivity extends Activity
             "Maldives", "Mali", "Malta", "Marshall Islands", "Yemen",
             "Yugoslavia", "Zambia", "Zimbabwe" };
    
+    // unsorted list items 
+    ArrayList<String> mItems;
     
-    @Override
-    public void onCreate(Bundle savedInstanceState) 
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        search=(EditText)findViewById(R.id.search_query);
-		search.addTextChangedListener(filterTextWatcher);
-		listView = (SectionListView) findViewById(R.id.section_list_view);
-		sideIndex = (LinearLayout) findViewById(R.id.list_index);	
-		sideIndex.setOnTouchListener(new Indextouch());
-		
-        if(COUNTRIES_ARY.length>0)
-		{
-        	// not forget to sort array
-            Arrays.sort(COUNTRIES_ARY);
-        	COUNTRIES = new ArrayList<String>(Arrays.asList(COUNTRIES_ARY));
-        	arrayAdapter =new StandardArrayAdapter(COUNTRIES);
-        	
-        	//adaptor for section
-	        sectionAdapter = new SectionListAdapter(this.getLayoutInflater(),arrayAdapter);
-	        listView.setAdapter(sectionAdapter);
-	        
-	        
-	        PoplulateSideview();
-		}
-        
-    }
+    // array list to store section positions
+    ArrayList<Integer> mListSectionPos;
     
-    private class Indextouch implements OnTouchListener 
-    {
-
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-
-         	
-         	if(event.getAction() ==MotionEvent.ACTION_MOVE  || event.getAction() ==MotionEvent.ACTION_DOWN)
-         	{
-         		 
-         		 sideIndex.setBackgroundDrawable(getResources().getDrawable(R.drawable.rounded_rectangle_shape));
-         		
-         		 // now you know coordinates of touch
-                 float  sideIndexX = event.getX();
-                 float  sideIndexY = event.getY();
-
-                  if(sideIndexX>0 && sideIndexY>0)
-                  {
-                  	 // and can display a proper item it country list
-                      displayListItem(sideIndexY);
-                  	
-                  }
-         	}
-         	else
-         	{
-         		sideIndex.setBackgroundColor(Color.TRANSPARENT);
-         	}
-            
-
-             return true;
-         
-		}
-    	
-    };
-   
-    public void onWindowFocusChanged(boolean hasFocus)
+	// array list to store listView data
+	ArrayList<String> mListItems;
+    
+    // custom list view with pinned header 
+    PinnedHeaderListView mListView;  
+    
+    // custom adapter
+    PinnedHeaderAdapter mAdaptor;
+    
+    // search box
+    EditText mSearchView;
+    
+    // loading view
+    ProgressBar mLoadingView;
+    
+    // empty view
+    TextView mEmptyView;
+    
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) 
 	{
-    	 // get height when component is poplulated in window
-		 sideIndexHeight = sideIndex.getHeight();
-		 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		 super.onWindowFocusChanged(hasFocus);
-	}  
-	  
-	  
-		private class StandardArrayAdapter extends BaseAdapter implements Filterable
-	    {
-
-	        private final ArrayList<String> items;
-
-	        public StandardArrayAdapter(ArrayList<String> args) 
-	        {
-	            this.items = args;
-	        }
-	      
-	        @Override
-	        public View getView(final int position, final View convertView, final ViewGroup parent) 
-	        {
-	            View view = convertView;
-	            if (view == null)
-	            {
-	                final LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	                view = vi.inflate(R.layout.row, null);
-	            }
-	            TextView textView = (TextView)view.findViewById(R.id.row_title);
-                if (textView != null) 
-                {
-                    textView.setText(items.get(position));
-                }
-	            return view;
-	        }
-
-			@Override
-			public int getCount() {
-				// TODO Auto-generated method stub
-				return items.size();
-			}
-
-			@Override
-			public Filter getFilter() {
-				Filter listfilter=new MyFilter();
-				return listfilter;
-			}
-
-			@Override
-			public Object getItem(int position) {
-				// TODO Auto-generated method stub
-				return items.get(position);
-			}
-
-			@Override
-			public long getItemId(int position) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-	    }
-
+		super.onCreate(savedInstanceState);
 		
-		public class MyFilter extends Filter
+		
+		// UI elements
+		setupViews();
+		
+		// Array to ArrayList 
+		mItems=new ArrayList<String>(Arrays.asList(ITEMS_ARY));
+		mListSectionPos=new ArrayList<Integer>();
+		mListItems=new ArrayList<String>();
+		
+		// for handling configuration change 		
+		if(savedInstanceState!=null)
 		{
-
-			@Override
-			protected FilterResults performFiltering(CharSequence constraint)
-			{
-				// NOTE: this function is *always* called from a background thread, and
-	            // not the UI thread.
-	            constraint = search.getText().toString();
-	            FilterResults result = new FilterResults();
-	            if(constraint != null && constraint.toString().length() > 0)
-	            {
-	            	//do not show side index while filter results
-	            	runOnUiThread(new Runnable() {
+			mListItems=savedInstanceState.getStringArrayList("mListItems");
+			mListSectionPos=savedInstanceState.getIntegerArrayList("mListSectionPos");
+			
+			if(mListItems!=null && mListItems.size()>0 && mListSectionPos!=null && mListSectionPos.size()>0)
+				setListAdaptor();
 						
-						@Override
-						public void run() 
-						{
-							((LinearLayout)findViewById(R.id.list_index)).setVisibility(View.INVISIBLE);
-						}
-					});
-	        
-	               ArrayList<String> filt=new ArrayList<String>();
-	               ArrayList<String> Items=new ArrayList<String>();
-	                synchronized(this)
-	                {
-	                    Items=COUNTRIES;
-	                }
-	                for(int i = 0;i<Items.size(); i++)
-	                {
-	                	String item = Items.get(i);
-	                   if(item.toLowerCase().startsWith(constraint.toString().toLowerCase()))
-	                   {
-	                    	 	filt.add(item);
-	                   }
-	                }
-	                
-	                result.count = filt.size();
-	                result.values = filt;
-	            }
-	            else
-	            {
-	            	
-	            	runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() 
-						{
-					    	((LinearLayout)findViewById(R.id.list_index)).setVisibility(View.VISIBLE);
-						}
-					});
-	                synchronized(this)
-	                {
-	                    result.count = COUNTRIES.size();
-	                    result.values = COUNTRIES;
-	                }
-	            	
-	            }
-	            return result;
-			}
-
-			@Override
-			protected void publishResults(CharSequence constraint,FilterResults results) 
+			String constraint=savedInstanceState.getString("constraint");			
+			if(constraint!=null && constraint.length()>0)
 			{
-					@SuppressWarnings("unchecked")
-					ArrayList<String> filtered = (ArrayList<String>)results.values;
-					arrayAdapter=  new StandardArrayAdapter(filtered);
-					sectionAdapter = new SectionListAdapter(getLayoutInflater(),arrayAdapter);
-			        listView.setAdapter(sectionAdapter);
-				  
+				mSearchView.setText(constraint);
+				setIndexBarViewVisibility(constraint);
 			}
 			
 		}
-	    
-	  
-	    private void displayListItem(float sideIndexY)
-	    {
-	        // compute number of pixels for every side index item
-	        double pixelPerIndexItem = (double) sideIndexHeight / sideIndexSize;
-
-	        // compute the item index for given event position belongs to
-	        int itemPosition = (int) (sideIndexY / pixelPerIndexItem);
-
-	        if(itemPosition<sideIndexList.size())
-	        {
-	     	   // get the item (we can do it since we know item index)
-	            Object[] indexItem = sideIndexList.get(itemPosition);
-	            listView.setSelectionFromTop((Integer)indexItem[1], 0);
-	        }
-	    }
-	   
-	    @SuppressLint("DefaultLocale")
-		private void PoplulateSideview()
-	    {
-	    		
-	    		String latter_temp,latter="";
-	    		int index=0;
-	    		sideIndex.removeAllViews();
-	    		sideIndexList.clear();
-	    		for(int i=0;i<COUNTRIES.size();i++)	    		{
-	    			Object[] temp=new Object[2];
-	    			latter_temp=(COUNTRIES.get(i)).substring(0, 1).toUpperCase();
-	    			if(!latter_temp.equals(latter))
-	    			{
-	    				// latter with its array index
-	    				latter=latter_temp;
-	    				temp[0]=latter;
-	    				temp[1]=i+index;
-	    				index++;
-	    				sideIndexList.add(temp);
-	    				
-	    				TextView latter_txt=new TextView(this);
-	    				latter_txt.setText(latter);
-	    				
-	    				latter_txt.setSingleLine(true);
-	    				latter_txt.setHorizontallyScrolling(false);
-	    				latter_txt.setTypeface(null, Typeface.BOLD);
-	    				latter_txt.setTextSize(TypedValue.COMPLEX_UNIT_DIP,getResources().getDimension(R.dimen.index_list_font));
-	    				LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,1);
-	    				params.gravity=Gravity.CENTER_HORIZONTAL;    
-	    				
-	    				latter_txt.setLayoutParams(params);
-	    				latter_txt.setPadding(10, 0,10, 0);
-	    				
-	    				
-	    				sideIndex.addView(latter_txt);
-	    			}
-	    		}
-	    		
-	    		sideIndexSize=sideIndexList.size();
-	    		
-	    }
-
-		private TextWatcher filterTextWatcher = new TextWatcher() 
-		   {
-				
-		    public void afterTextChanged(Editable s)
-		    {
-		    	new StandardArrayAdapter(COUNTRIES).getFilter().filter(s.toString());
-		    }
-
-		    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		    }
-
-		    public void onTextChanged(CharSequence s, int start, int before, int count) {
-		        // your search logic here
-		    }
-
-		}; 
-   
+		else
+		{
+			new Poplulate().execute(mItems);
+		}
+		
+	}
 	
-}
+	private void setupViews() 
+	{
+		setContentView(R.layout.main_act);
+		mSearchView=(EditText)findViewById(R.id.search_view);
+		mLoadingView=(ProgressBar)findViewById(R.id.loading_view);
+		mListView = (PinnedHeaderListView) findViewById(R.id.list_view);
+		mEmptyView=(TextView)findViewById(R.id.empty_view);
+		
+	}
+	
+	
+	//	I encountered an interesting problem with a TextWatcher listening for changes in an EditText.
+	//	The afterTextChanged method was called, each time, the device orientation changed. 
+	//	An answer on Stackoverflow let me understand what was happening: Android recreates the activity, and 
+	//	the automatic restoration of the state of the input fields, is happening after onCreate had finished, 
+	//	where the TextWatcher was added as a TextChangedListener.The solution to the problem consisted in adding 
+	//	the TextWatcher in onPostCreate, which is called after restoration has taken place
+	//
+	//  http://stackoverflow.com/questions/6028218/android-retain-callback-state-after-configuration-change/6029070#6029070
+	//  http://stackoverflow.com/questions/5151095/textwatcher-called-even-if-text-is-set-before-adding-the-watcher
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		mSearchView.addTextChangedListener(filterTextWatcher);
+		super.onPostCreate(savedInstanceState);
+	}
 
+	private void setListAdaptor()
+	{
+		// create instance of PinnedHeaderAdapter and set adapter to list view
+		mAdaptor=new PinnedHeaderAdapter(this,mListItems,mListSectionPos);
+    	mListView.setAdapter(mAdaptor);    	
+
+    	// set header view
+    	View mPinnedHeaderView = LayoutInflater.from(this).inflate(R.layout.section_row_view, mListView, false);
+    	mListView.setPinnedHeaderView(mPinnedHeaderView);
+    	   	
+    	// set index bar view
+    	IndexBarView mIndexBarView =(IndexBarView) LayoutInflater.from(this).inflate(R.layout.index_bar_view, mListView, false);
+    	mIndexBarView.setData(mListView,mListItems,mListSectionPos);   
+    	mListView.setIndexBarView(mIndexBarView);
+    	  
+    	// set preview text view
+    	View mPreviewTextView=LayoutInflater.from(this).inflate(R.layout.preview_view, mListView, false);
+    	mListView.setPreviewView(mPreviewTextView);
+    	
+    	// for configure pinned header view on scroll change
+    	mListView.setOnScrollListener(mAdaptor);
+	}
+	 
+	private TextWatcher filterTextWatcher = new TextWatcher() 
+	{
+			
+	    public void afterTextChanged(Editable s) {
+	    	String str=s.toString();
+	    	if(mAdaptor!=null && str!=null)
+	    	mAdaptor.getFilter().filter(str);
+	    }
+
+	    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+	    }
+
+	    public void onTextChanged(CharSequence s, int start, int before, int count) {
+	        
+	    }
+
+	}; 
+		
+	
+	public class ListFilter extends Filter
+	{
+		@Override
+		protected FilterResults performFiltering(CharSequence constraint)
+		{
+			// NOTE: this function is *always* called from a background thread, and
+            // not the UI thread.
+           
+            FilterResults result = new FilterResults();
+            	
+ 	            if(constraint != null && constraint.toString().length() > 0)
+ 	            {
+ 	            	
+ 	               ArrayList<String> filt=new ArrayList<String>();
+ 	               ArrayList<String> Items=new ArrayList<String>();
+ 	                synchronized(this)
+ 	                {
+ 	                    Items=mItems;
+ 	                
+	 	                for(int i = 0;i<Items.size(); i++)
+	 	                {
+	 	                   String item = Items.get(i);
+	 	                   if(item.toLowerCase(Locale.getDefault()).startsWith(constraint.toString().toLowerCase(Locale.getDefault())))
+	 	                   {
+	 	                    	 	filt.add(item);
+	 	                   }
+	 	                }
+	 	                
+	 	                result.count = filt.size();
+	 	                result.values = filt;
+ 	               }
+ 	            }
+ 	            else
+ 	            {
+ 	            
+ 	                synchronized(this)
+ 	                {
+ 	                    result.count = mItems.size();
+ 	                    result.values = mItems;
+ 	                }
+ 	            	
+ 	            }
+ 	            return result;
+            
+           
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		protected void publishResults(CharSequence constraint,FilterResults results) 
+		{
+				
+				ArrayList<String> filtered = (ArrayList<String>)results.values;
+				setIndexBarViewVisibility(constraint.toString());
+				//sort array and extract sections in background Thread
+				new Poplulate().execute(filtered);
+				
+		}
+		
+	}
+	
+	private void setIndexBarViewVisibility(String constraint)
+	{
+		// hide index bar for search results
+		if(constraint!=null && constraint.length()>0)
+			mListView.hideIndexBarView();
+		else
+			mListView.showIndexBarView();
+	}
+	
+	// sort array and extract sections in background Thread here we use AsyncTask
+	private class Poplulate extends AsyncTask<ArrayList<String>, Void, Void>
+	{
+		
+		private void showLoading(View content_view,View mLoadingView,View mEmptyView) 
+		{
+			content_view.setVisibility(View.GONE);
+			mLoadingView.setVisibility(View.VISIBLE);
+			mEmptyView.setVisibility(View.GONE);
+		}
+		
+		private void showContent(View content_view,View mLoadingView,View mEmptyView) 
+		{
+			content_view.setVisibility(View.VISIBLE);
+			mLoadingView.setVisibility(View.GONE);
+			mEmptyView.setVisibility(View.GONE);
+		}
+		
+		private void showEmptyText(View content_view,View mLoadingView,View mEmptyView) 
+		{
+			content_view.setVisibility(View.GONE);
+			mLoadingView.setVisibility(View.GONE);
+			mEmptyView.setVisibility(View.VISIBLE);
+		}
+		
+		
+		@Override
+		protected void onPreExecute() 
+		{
+			//show loading indicator
+			showLoading(mListView,mLoadingView,mEmptyView);
+			super.onPreExecute();
+		}
+
+		@Override
+		protected Void doInBackground(ArrayList<String>... params) 
+		{
+			mListItems.clear();
+			mListSectionPos.clear();
+			ArrayList<String> mItems=params[0];
+			if(mItems.size()>0)
+			{
+	        	// NOT forget to sort array
+	            Collections.sort(mItems);
+	        		            
+	            int i=0;
+				String prev_section="";
+				while(i<mItems.size())
+				{
+					String current_item=mItems.get(i).toString();
+					String current_section = current_item.substring(0, 1).toUpperCase(Locale.getDefault());
+					if(!prev_section.equals(current_section))
+					{
+						mListItems.add(current_section);
+						mListItems.add(current_item);
+						mListSectionPos.add(mListItems.indexOf(current_section));// array list of section positions
+						prev_section=current_section;
+					}
+					else
+					{
+						mListItems.add(current_item);
+					}
+					i++;
+				}
+	    	   
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) 
+		{
+			if(!isCancelled())
+			{
+				if(mListItems.size()<=0)
+				{
+					showEmptyText(mListView, mLoadingView, mEmptyView);
+				}
+				else
+				{
+					setListAdaptor();
+				    showContent(mListView,mLoadingView,mEmptyView);
+				}
+			}
+			super.onPostExecute(result);
+		} 
+		
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		if(mListItems!=null && mListItems.size()>0)
+			outState.putStringArrayList("mListItems", mListItems);
+		
+		if(mListSectionPos!=null && mListSectionPos.size()>0)
+			outState.putIntegerArrayList("mListSectionPos", mListSectionPos);
+		
+		String search_text=mSearchView.getText().toString();		
+		if(search_text!=null && search_text.length()>0)
+			outState.putString("constraint",search_text);
+		
+		super.onSaveInstanceState(outState);
+	}
+
+}

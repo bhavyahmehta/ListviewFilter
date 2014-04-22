@@ -1,11 +1,8 @@
-ListviewFilter
-==============
-
-Awesome iOS like Listview filter functionality in Android.
-
 # ListView Filter
 
-![Screenshot](https://raw.github.com/bhavyahmehta/ListviewFilter/master/ListviewFilter/image1.png)
+ Awesome iOS like Listview filter functionality in Android.
+
+![Screenshot](https://raw.github.com/bhavyahmehta/ListviewFilter/master/ListviewFilter/screen_shot.png)
 
 
 ## Notes
@@ -16,5 +13,6 @@ Awesome iOS like Listview filter functionality in Android.
  * Optimized,simple and easy to use code.
  * This sample code is currently under development stage.
  * Improvements and suggestions are always welcome.
-
+ 
+ ## Change Log
 
