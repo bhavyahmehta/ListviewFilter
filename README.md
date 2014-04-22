@@ -1,6 +1,6 @@
 # ListView Filter
 
- Awesome iOS like Listview filter functionality in Android.
+ Awesome Listview filter functionality in Android.
 
 ![Screenshot](https://raw.github.com/bhavyahmehta/ListviewFilter/master/ListviewFilter/screen_shot.png)
 
@@ -14,5 +14,9 @@
  * This sample code is currently under development stage.
  * Improvements and suggestions are always welcome.
  
- ## Change Log
+## Change Log
+
+ * Updated soon.
+ 
+
 
