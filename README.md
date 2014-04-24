@@ -2,7 +2,7 @@
 
  Awesome Listview filter functionality in Android.
 
-![Screenshot](https://raw.github.com/bhavyahmehta/ListviewFilter/screen_shot.png)
+![Screenshot](https://raw.githubusercontent.com/bhavyahmehta/ListviewFilter/master/screen_shot.png)
 
  * See it in Action: https://www.youtube.com/watch?v=7Rkko1swohM
  * Listview filtering from a whole new perspective.
