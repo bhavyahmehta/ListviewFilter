@@ -47,6 +47,17 @@ public class PinnedHeaderAdapter extends BaseAdapter implements OnScrollListener
 		public int getCount() {
 			return mListItems.size();
 		}
+		
+
+        @Override
+        public boolean areAllItemsEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return !mListSectionPos.contains(position);
+        }
 
 		@Override
         public int getViewTypeCount() {
