@@ -1,7 +1,7 @@
-//@author Bhavya
+// @author Bhavya Mehta
 package com.example.listviewfilter;
 
-public interface IIndexBarFilter 
-{
-	void filterList(float msideIndexY,int position,String preview_text);
+// Gives index bar view touched Y axis value, position of section and preview text value to list view 
+public interface IIndexBarFilter {
+	void filterList(float sideIndexY,int position,String previewText);
 }

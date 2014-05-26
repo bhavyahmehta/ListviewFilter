@@ -22,7 +22,7 @@
             layout="@layout/loading_empty_view"
              />
         
-         <com.example.listviewfilter.PinnedHeaderListView
+         <com.example.listviewfilter.ui.PinnedHeaderListView
             android:id="@+id/list_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

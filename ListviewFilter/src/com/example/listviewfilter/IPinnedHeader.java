@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//modified by @author Bhavya
+// modified by @author Bhavya Mehta
 package com.example.listviewfilter;
 
 import android.view.View;

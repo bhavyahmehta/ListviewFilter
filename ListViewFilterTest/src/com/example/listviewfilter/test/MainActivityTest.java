@@ -1,4 +1,4 @@
-//@author Bhavya
+// @author Bhavya Mehta
 package com.example.listviewfilter.test;
 
 import android.test.ActivityInstrumentationTestCase2;
@@ -12,13 +12,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.listviewfilter.MainActivity;
-import com.example.listviewfilter.PinnedHeaderListView;
 import com.example.listviewfilter.R;
+import com.example.listviewfilter.ui.MainActivity;
+import com.example.listviewfilter.ui.PinnedHeaderListView;
 
-
+// Main activity unit test case
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
-
 	
 	// UI elements
     private MainActivity mActivity;
@@ -32,6 +31,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         super(MainActivity.class);
     }
 
+    
+    // Initialize member variables 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -43,15 +44,12 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         mEmptyTextView=(TextView)mActivity.findViewById(R.id.empty_view);
     }
 
-    /**
-     * Test if your test fixture has been set up correctly. You should always implement a test that
-     * checks the correct setup of your test fixture. If this tests fails all other tests are
-     * likely to fail as well.
-     */
+   
+    // null check condition
     @SmallTest
     public void testPreconditions() {
-        //Try to add a message to add context to your assertions. These messages will be shown if
-        //a tests fails and make it easy to understand why a test failed
+        // Try to add a message to add context to your assertions. These messages will be shown if
+        // a tests fails and make it easy to understand why a test failed
         assertNotNull("mActivity is null", mActivity);
         assertNotNull("mSearchView is null", mSearchView);
         assertNotNull("mListView is null", mListView);
@@ -59,11 +57,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertNotNull("mEmptyTextView is null", mEmptyTextView);
     }
 
-    @MediumTest
-    public void testListView_layout() 
-    {
-        final View decorView = mActivity.getWindow().getDecorView();
 
+    // list view is in layout or not?
+    @MediumTest
+    public void testListViewLayout() {
+        final View decorView = mActivity.getWindow().getDecorView();
         ViewAsserts.assertOnScreen(decorView, mListView);
         final ViewGroup.LayoutParams layoutParams =mListView.getLayoutParams();
         assertNotNull("mListView layoutParams is null",layoutParams);
@@ -74,20 +72,20 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
     
     
+    // thread sleep for 2000 milliseconds
     private void sleep() {
     	 try {
  			Thread.sleep(2000);
  		} catch (InterruptedException e) {
- 			// TODO Auto-generated catch block
  			e.printStackTrace();
  		}
 	}
-
+    
+    
+    // search box is in layout or not?
     @MediumTest
-	public void testSearchView_layout() 
-    {
+	public void testSearchViewLayout() {
         final View decorView = mActivity.getWindow().getDecorView();
-
         ViewAsserts.assertOnScreen(decorView, mSearchView);
         final ViewGroup.LayoutParams layoutParams =mSearchView.getLayoutParams();
         assertNotNull("mSearchView layoutParams is null",layoutParams);
@@ -96,6 +94,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertTrue("mSearchView is not visible",View.VISIBLE == mSearchView.getVisibility());
     }
     
+    
+    // search box hint text contains correct text or not?
     @SmallTest
     public void testSearchHintText() {     
         final String expected = mActivity.getString(R.string.search_hint);
@@ -103,6 +103,8 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         assertEquals("mSearchView contains wrong hint text", expected, actual);
     }
     
+    
+    // empty view contains correct text or not?
     @SmallTest
     public void testEmptyViewText() {     
         final String expected = mActivity.getString(R.string.empty_list_msg);
@@ -111,9 +113,9 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     }
     
    
+    // search list view content by latter "A"
     @MediumTest
-    public void testListViewSearch()
-    {
+    public void testListViewSearch() {
     	// Send string input value
     	getInstrumentation().runOnMainSync(new Runnable() {
     	    @Override
@@ -121,32 +123,25 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     	    	mSearchView.requestFocus();
     	    }
     	});
-    	getInstrumentation().waitForIdleSync();
     	
+    	getInstrumentation().waitForIdleSync();
     	getInstrumentation().sendStringSync("A");
     	getInstrumentation().waitForIdleSync();
     	
     	sleep();
     	
-		getInstrumentation().runOnMainSync(new Runnable() 
-		{
+		getInstrumentation().runOnMainSync(new Runnable() {
     	    @Override
-    	    public void run() 
-    	    {
-       	    	for(int i=0;i<mListView.getChildCount();i++)
-       	    	{
+    	    public void run() {
+       	    	for(int i=0;i<mListView.getChildCount();i++) {
         	    	TextView list_item=(TextView) mListView.getChildAt(i);
-            		assertNotNull("list_item is null", list_item);
+            		assertNotNull("listItem is null", list_item);
             		final char expected = 'A';
             	    final char actual = list_item.getText().charAt(0);
-            		assertEquals("search contains wrong list_item", expected, actual);
+            		assertEquals("search contains wrong listItem", expected, actual);
         	    }
    	    	}
     	});
     	getInstrumentation().waitForIdleSync();    		
-    	
     }
-    
-  
-    
 }
