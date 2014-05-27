@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.listviewfilter.ui.MainActivity;
 import com.example.listviewfilter.ui.PinnedHeaderListView;
 
+// Customized adaptor to populate data in PinnedHeaderListView
 public class PinnedHeaderAdapter extends BaseAdapter implements OnScrollListener, IPinnedHeader, Filterable {
 
 	private static final int TYPE_ITEM = 0;
