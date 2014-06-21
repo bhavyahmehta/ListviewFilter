@@ -300,7 +300,7 @@ public class MainActivity extends Activity {
 			if (mItems.size() > 0) {
 
 				// NOT forget to sort array
-				Collections.sort(items);
+				Collections.sort(items, new SortIgnoreCase());
 
 				int i = 0;
 				String prev_section = "";
@@ -337,6 +337,12 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	public class SortIgnoreCase implements Comparator<String> {
+		public int compare(String s1, String s2) {
+			return s1.compareToIgnoreCase(s2);
+		}
+	}
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		if (mListItems != null && mListItems.size() > 0) {
