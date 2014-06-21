@@ -198,8 +198,7 @@ public class MainActivity extends Activity {
 				ArrayList<String> filterItems = new ArrayList<String>();
 
 				synchronized (this) {
-					for (int i = 0; i < mItems.size(); i++) {
-						String item = mItems.get(i);
+					for (String item : mItems) {
 						if (item.toLowerCase(Locale.getDefault()).startsWith(constraintStr)) {
 							filterItems.add(item);
 						}
